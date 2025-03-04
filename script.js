@@ -12,10 +12,10 @@ function processInput() {
         return;
     }
     
-    let matrices = latexInput.split("*").map(m => m.trim()); // Mátrixok szétszedése
+    let terms = latexInput.split(/([*+\-])/).map(m => m.trim()); // Kifejezés szétszedése műveletek szerint
     let matrixDimensions = matrixSize.split(",").map(dim => dim.trim());
     
-    if (matrices.length !== matrixDimensions.length) {
+    if (terms.length !== matrixDimensions.length * 2 - 1) {
         outputDiv.innerHTML = "<p style='color: red;'>A megadott mátrixok száma és dimenziók száma nem egyezik!</p>";
         console.log("Hiba: Mátrixok száma nem egyezik a dimenziókéval");
         return;
@@ -29,19 +29,41 @@ function processInput() {
         return;
     }
     
-    let firstDim = parsedDimensions[0]; // A mátrix dimenziója
-    let secondDim = parsedDimensions[1]; // B mátrix dimenziója
+    let currentDim = parsedDimensions[0];
+    let validExpression = true;
+    let computationSteps = [`Kezdő dimenzió: ${currentDim[0]}×${currentDim[1]}`];
     
-    let validOperation = (firstDim[1] === secondDim[0]) || isNaN(firstDim[1]) || isNaN(secondDim[0]);
-    let resultDimension = validOperation ? `${firstDim[0]}×${secondDim[1]}` : "HIBA";
+    for (let i = 1; i < terms.length; i += 2) {
+        let operator = terms[i];
+        let nextDim = parsedDimensions[(i + 1) / 2];
+        
+        if (operator === "*") {
+            if (currentDim[1] !== nextDim[0]) {
+                validExpression = false;
+                computationSteps.push(`HIBA: Nem kompatibilis mátrixszorzás (${currentDim[0]}×${currentDim[1]}) * (${nextDim[0]}×${nextDim[1]})`);
+                break;
+            }
+            currentDim = [currentDim[0], nextDim[1]];
+            computationSteps.push(`Szorzás eredménye: ${currentDim[0]}×${currentDim[1]}`);
+        } else if (operator === "+" || operator === "-") {
+            if (currentDim[0] !== nextDim[0] || currentDim[1] !== nextDim[1]) {
+                validExpression = false;
+                computationSteps.push(`HIBA: Nem kompatibilis mátrixösszeadás/kivonás (${currentDim[0]}×${currentDim[1]}) ${operator} (${nextDim[0]}×${nextDim[1]})`);
+                break;
+            }
+            computationSteps.push(`Összeadás/kivonás megtartja a dimenziót: ${currentDim[0]}×${currentDim[1]}`);
+        }
+    }
     
-    let operationResult = validOperation 
-        ? `<p style='color: green;'>A művelet helyes! Eredmény dimenziója: ${resultDimension}</p>`
-        : `<p style='color: red;'>Helytelen művelet (dimenzióhiba)!</p>`;
+    let operationResult = validExpression 
+        ? `<p style='color: green;'>A művelet helyes! Végeredmény dimenziója: ${currentDim[0]}×${currentDim[1]}</p>`
+        : `<p style='color: red;'>Hibás művelet (dimenzióhiba)!</p>`;
     
     outputDiv.innerHTML = `
         <p><strong>LaTeX Kifejezés:</strong> ${latexInput}</p>
         ${operationResult}
+        <h3>Lépések:</h3>
+        <ul>${computationSteps.map(step => `<li>${step}</li>`).join("")}</ul>
     `;
     
     console.log("Eredmény kiírása kész");
@@ -63,22 +85,10 @@ function processInput() {
             for (let j = 0; j < Math.min(cols, 4); j++) {
                 let cell = document.createElement("div");
                 cell.className = "matrix-cell";
-                cell.innerText = `a${i+1},${j+1}`;
+                cell.innerHTML = `a<sub>${i+1},${j+1}</sub>`;
                 row.appendChild(cell);
             }
-            if (cols > 4) {
-                let dots = document.createElement("div");
-                dots.className = "matrix-cell dots";
-                dots.innerText = "...";
-                row.appendChild(dots);
-            }
             matrix.appendChild(row);
-        }
-        if (rows > 4) {
-            let dotsRow = document.createElement("div");
-            dotsRow.className = "matrix-row";
-            dotsRow.innerHTML = `<div class='matrix-cell dots'>...</div>`;
-            matrix.appendChild(dotsRow);
         }
         
         let labelDiv = document.createElement("div");
@@ -89,11 +99,11 @@ function processInput() {
         matrixWrapper.appendChild(matrix);
         visualizationDiv.appendChild(matrixWrapper);
     }
-
-    drawMatrix(firstDim[0], firstDim[1], matrices[0], "lightblue");
-    drawMatrix(secondDim[0], secondDim[1], matrices[1], "lightgreen");
-    if (validOperation && resultDimension !== "HIBA") {
-        let resultDim = resultDimension.split("×");
-        drawMatrix(resultDim[0], resultDim[1], "Eredmény", "orange");
+    
+    parsedDimensions.forEach((dim, index) => {
+        drawMatrix(dim[0], dim[1], terms[index * 2], index % 2 === 0 ? "lightblue" : "lightgreen");
+    });
+    if (validExpression) {
+        drawMatrix(currentDim[0], currentDim[1], "Végeredmény", "orange");
     }
 }
