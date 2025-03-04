@@ -58,10 +58,13 @@ p {
     border: 1px solid #ccc;
     background: white;
     border-radius: 5px;
+    flex-wrap: wrap;
 }
 
 .matrix {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
+    grid-template-rows: repeat(auto-fit, minmax(30px, 1fr));
     align-items: center;
     justify-content: center;
     font-weight: bold;
@@ -69,4 +72,16 @@ p {
     text-align: center;
     margin: 5px;
     padding: 10px;
+    position: relative;
+}
+
+.matrix::after {
+    content: attr(data-dim);
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
 }

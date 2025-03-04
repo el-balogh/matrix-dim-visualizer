@@ -21,18 +21,11 @@ function processInput() {
         return;
     }
     
-    let parsedDimensions = [];
+    let parsedDimensions = matrixDimensions.map(dim => dim.includes("x") ? dim.split("x").map(s => s.trim()) : null);
     
-    for (let dim of matrixDimensions) {
-        let dims = dim.split("x").map(Number);
-        if (dims.length === 2 && !isNaN(dims[0]) && !isNaN(dims[1])) {
-            parsedDimensions.push(dims);
-        }
-    }
-    
-    if (parsedDimensions.length < 2) {
-        outputDiv.innerHTML = "<p style='color: red;'>Adj meg legalább két mátrix dimenziót (pl. 3x4, 4x2).</p>";
-        console.log("Hiba: Nem elég mátrix dimenzió lett megadva");
+    if (parsedDimensions.includes(null)) {
+        outputDiv.innerHTML = "<p style='color: red;'>Hibás dimenzió formátum! Használj p×q, q×r formátumot.</p>";
+        console.log("Hiba: Hibás dimenzió formátum");
         return;
     }
     
@@ -41,14 +34,8 @@ function processInput() {
     
     let dimensionText = `${matrices[0]}: ${firstDim[0]}×${firstDim[1]}, ${matrices[1]}: ${secondDim[0]}×${secondDim[1]}`;
     
-    let validOperation = false;
-    let resultDimension = "";
-    
-    // Ellenőrizzük, hogy a művelet helyes-e (mátrix szorzás)
-    if (firstDim[1] === secondDim[0]) {
-        validOperation = true;
-        resultDimension = `${firstDim[0]}×${secondDim[1]}`;
-    }
+    let validOperation = (firstDim[1] === secondDim[0]) || isNaN(firstDim[1]) || isNaN(secondDim[0]);
+    let resultDimension = validOperation ? `${firstDim[0]}×${secondDim[1]}` : "HIBA";
     
     let matrixTypeText = "";
     switch(matrixType) {
@@ -81,8 +68,8 @@ function processInput() {
     function drawMatrix(rows, cols, label, color) {
         let matrix = document.createElement("div");
         matrix.className = "matrix";
-        matrix.style.width = `${cols * 30}px`;
-        matrix.style.height = `${rows * 30}px`;
+        matrix.style.width = isNaN(cols) ? `100px` : `${cols * 30}px`;
+        matrix.style.height = isNaN(rows) ? `100px` : `${rows * 30}px`;
         matrix.style.backgroundColor = color;
         matrix.innerText = label;
         visualizationDiv.appendChild(matrix);
@@ -90,8 +77,7 @@ function processInput() {
 
     drawMatrix(firstDim[0], firstDim[1], matrices[0], "lightblue");
     drawMatrix(secondDim[0], secondDim[1], matrices[1], "lightgreen");
-    if (validOperation) {
-        let resultDim = resultDimension.split("×").map(Number);
-        drawMatrix(resultDim[0], resultDim[1], "Eredmény", "orange");
+    if (validOperation && resultDimension !== "HIBA") {
+        drawMatrix(resultDimension.split("×")[0], resultDimension.split("×")[1], "Eredmény", "orange");
     }
 }
