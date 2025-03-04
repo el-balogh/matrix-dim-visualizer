@@ -1,5 +1,5 @@
+
 function processInput() {
-    console.log("Függvény meghívva: processInput()");
     let latexInput = document.getElementById("latexInput").value.trim();
     let matrixType = document.getElementById("matrixType").value;
     let matrixSize = document.getElementById("matrixSize").value;
@@ -7,7 +7,6 @@ function processInput() {
     
     if (!latexInput) {
         outputDiv.innerHTML = "<p style='color: red;'>Adj meg egy LaTeX kifejezést!</p>";
-        console.log("Hiba: nincs LaTeX input");
         return;
     }
     
@@ -16,7 +15,6 @@ function processInput() {
     
     if (matrices.length !== matrixDimensions.length) {
         outputDiv.innerHTML = "<p style='color: red;'>A megadott mátrixok száma és dimenziók száma nem egyezik!</p>";
-        console.log("Hiba: Mátrixok száma nem egyezik a dimenziókéval");
         return;
     }
     
@@ -31,7 +29,6 @@ function processInput() {
     
     if (parsedDimensions.length < 2) {
         outputDiv.innerHTML = "<p style='color: red;'>Adj meg legalább két mátrix dimenziót (pl. 3x4, 4x2).</p>";
-        console.log("Hiba: Nem elég mátrix dimenzió lett megadva");
         return;
     }
     
@@ -72,6 +69,5 @@ function processInput() {
         ${operationResult}
     `;
     
-    console.log("Eredmény kiírása kész");
     MathJax.typeset();
 }
