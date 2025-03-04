@@ -15,7 +15,7 @@ function processInput() {
     let terms = latexInput.split(/([*+\-])/).map(m => m.trim()); // Kifejezés szétszedése műveletek szerint
     let matrixDimensions = matrixSize.split(",").map(dim => dim.trim());
     
-    if (terms.length !== matrixDimensions.length * 2 - 1) {
+    if (matrixDimensions.length * 2 - 1 !== terms.length) {
         outputDiv.innerHTML = "<p style='color: red;'>A megadott mátrixok száma és dimenziók száma nem egyezik!</p>";
         console.log("Hiba: Mátrixok száma nem egyezik a dimenziókéval");
         return;
@@ -71,7 +71,7 @@ function processInput() {
 
     // Mátrix vizualizáció
     visualizationDiv.innerHTML = "";
-    function drawMatrix(rows, cols, label, color) {
+    function drawMatrix(rows, cols, label, color, isResult = false) {
         let matrixWrapper = document.createElement("div");
         matrixWrapper.className = "matrix-wrapper";
         
@@ -85,7 +85,13 @@ function processInput() {
             for (let j = 0; j < Math.min(cols, 4); j++) {
                 let cell = document.createElement("div");
                 cell.className = "matrix-cell";
-                cell.innerHTML = `a<sub>${i+1},${j+1}</sub>`;
+                
+                if (isResult) {
+                    cell.innerHTML = `c<sub>${i+1},${j+1}</sub> = a<sub>${i+1},1</sub> * b<sub>1,${j+1}</sub> + ...`;
+                } else {
+                    let matrixLetter = label.trim();
+                    cell.innerHTML = `${matrixLetter.toLowerCase()}<sub>${i+1},${j+1}</sub>`;
+                }
                 row.appendChild(cell);
             }
             matrix.appendChild(row);
@@ -104,6 +110,6 @@ function processInput() {
         drawMatrix(dim[0], dim[1], terms[index * 2], index % 2 === 0 ? "lightblue" : "lightgreen");
     });
     if (validExpression) {
-        drawMatrix(currentDim[0], currentDim[1], "Végeredmény", "orange");
+        drawMatrix(currentDim[0], currentDim[1], "Végeredmény", "orange", true);
     }
 }
