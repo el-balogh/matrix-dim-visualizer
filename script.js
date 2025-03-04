@@ -66,7 +66,7 @@ function processInput() {
         : `<p style='color: red;'>Helytelen művelet (dimenzióhiba)!</p>`;
     
     outputDiv.innerHTML = `
-        <p><strong>LaTeX Kifejezés:</strong> \(${latexInput}\)</p>
+        <p><strong>LaTeX Kifejezés:</strong> <span class='highlight' data-dim="${firstDim[0]}×${firstDim[1]}">${matrices[0]}</span> * <span class='highlight' data-dim="${secondDim[0]}×${secondDim[1]}">${matrices[1]}</span></p>
         <p><strong>Típus:</strong> ${matrixTypeText}</p>
         <p><strong>${dimensionText}</strong></p>
         ${operationResult}
@@ -74,4 +74,20 @@ function processInput() {
     
     console.log("Eredmény kiírása kész");
     MathJax.typeset();
+
+    // Tooltip hozzáadása
+    document.querySelectorAll(".highlight").forEach(el => {
+        el.addEventListener("mouseover", function() {
+            let tooltip = document.createElement("div");
+            tooltip.className = "tooltip";
+            tooltip.innerText = `Dimenzió: ${el.getAttribute("data-dim")}`;
+            document.body.appendChild(tooltip);
+            let rect = el.getBoundingClientRect();
+            tooltip.style.left = `${rect.left + window.scrollX}px`;
+            tooltip.style.top = `${rect.top + window.scrollY - 30}px`;
+        });
+        el.addEventListener("mouseout", function() {
+            document.querySelectorAll(".tooltip").forEach(t => t.remove());
+        });
+    });
 }

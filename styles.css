@@ -48,3 +48,23 @@ button:hover {
 p {
     margin: 5px 0;
 }
+
+/* Tooltip stílus */
+.tooltip {
+    position: absolute;
+    background: black;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+/* Kiemelt szöveg, ha fölé visszük az egeret */
+.highlight {
+    background-color: yellow;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
