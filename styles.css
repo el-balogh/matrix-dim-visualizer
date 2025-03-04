@@ -49,30 +49,24 @@ p {
     margin: 5px 0;
 }
 
-/* Tooltip stílus */
-.tooltip {
-    position: absolute;
-    background: black;
-    color: white;
-    padding: 5px 10px;
+/* Mátrix vizualizáció */
+#matrix-visualization {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background: white;
     border-radius: 5px;
-    font-size: 12px;
-    white-space: nowrap;
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-    pointer-events: none;
 }
 
-.tooltip.visible {
-    opacity: 1;
-}
-
-/* Kiemelt szöveg, ha fölé visszük az egeret */
-.highlight {
-    background-color: yellow;
-    cursor: pointer;
-    padding: 2px 4px;
-    border-radius: 3px;
-    position: relative;
+.matrix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 2px solid black;
+    text-align: center;
+    margin: 5px;
+    padding: 10px;
 }

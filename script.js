@@ -4,6 +4,7 @@ function processInput() {
     let matrixType = document.getElementById("matrixType").value;
     let matrixSize = document.getElementById("matrixSize").value;
     let outputDiv = document.getElementById("output");
+    let visualizationDiv = document.getElementById("matrix-visualization");
     
     if (!latexInput) {
         outputDiv.innerHTML = "<p style='color: red;'>Adj meg egy LaTeX kifejezést!</p>";
@@ -75,20 +76,22 @@ function processInput() {
     console.log("Eredmény kiírása kész");
     MathJax.typeset();
 
-    // Tooltip működése
-    document.querySelectorAll(".highlight").forEach(el => {
-        el.addEventListener("mouseover", function(event) {
-            let tooltip = document.createElement("div");
-            tooltip.className = "tooltip visible";
-            tooltip.innerText = `Dimenzió: ${el.getAttribute("data-dim")}`;
-            document.body.appendChild(tooltip);
-            
-            let rect = el.getBoundingClientRect();
-            tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
-            tooltip.style.top = `${rect.top + window.scrollY - 35}px`;
-        });
-        el.addEventListener("mouseout", function() {
-            document.querySelectorAll(".tooltip").forEach(t => t.remove());
-        });
-    });
+    // Mátrix vizualizáció
+    visualizationDiv.innerHTML = "";
+    function drawMatrix(rows, cols, label, color) {
+        let matrix = document.createElement("div");
+        matrix.className = "matrix";
+        matrix.style.width = `${cols * 30}px`;
+        matrix.style.height = `${rows * 30}px`;
+        matrix.style.backgroundColor = color;
+        matrix.innerText = label;
+        visualizationDiv.appendChild(matrix);
+    }
+
+    drawMatrix(firstDim[0], firstDim[1], matrices[0], "lightblue");
+    drawMatrix(secondDim[0], secondDim[1], matrices[1], "lightgreen");
+    if (validOperation) {
+        let resultDim = resultDimension.split("×").map(Number);
+        drawMatrix(resultDim[0], resultDim[1], "Eredmény", "orange");
+    }
 }
