@@ -1,20 +1,22 @@
 function processInput() {
-    let latexInput = document.getElementById("latexInput").value;
+    let latexInput = document.getElementById("latexInput").value.trim();
     let matrixType = document.getElementById("matrixType").value;
     let matrixSize = document.getElementById("matrixSize").value;
     let outputDiv = document.getElementById("output");
     
-    if (!latexInput.trim()) {
+    if (!latexInput) {
         outputDiv.innerHTML = "<p style='color: red;'>Adj meg egy LaTeX kifejezést!</p>";
         return;
     }
     
-    let dimensionText = "";
-    let validOperation = false;
-    let resultDimension = "";
-    
-    // Dimenziók beolvasása
+    let matrices = latexInput.split("*").map(m => m.trim()); // Mátrixok szétszedése
     let matrixDimensions = matrixSize.split(",").map(dim => dim.trim());
+    
+    if (matrices.length !== matrixDimensions.length) {
+        outputDiv.innerHTML = "<p style='color: red;'>A megadott mátrixok száma és dimenziók száma nem egyezik!</p>";
+        return;
+    }
+    
     let parsedDimensions = [];
     
     for (let dim of matrixDimensions) {
@@ -32,14 +34,15 @@ function processInput() {
     let firstDim = parsedDimensions[0]; // A mátrix dimenziója
     let secondDim = parsedDimensions[1]; // B mátrix dimenziója
     
-    dimensionText = `A: ${firstDim[0]}×${firstDim[1]}, B: ${secondDim[0]}×${secondDim[1]}`;
+    let dimensionText = `${matrices[0]}: ${firstDim[0]}×${firstDim[1]}, ${matrices[1]}: ${secondDim[0]}×${secondDim[1]}`;
+    
+    let validOperation = false;
+    let resultDimension = "";
     
     // Ellenőrizzük, hogy a művelet helyes-e (mátrix szorzás)
-    if (latexInput.includes("*")) {
-        if (firstDim[1] === secondDim[0]) {
-            validOperation = true;
-            resultDimension = `${firstDim[0]}×${secondDim[1]}`;
-        }
+    if (firstDim[1] === secondDim[0]) {
+        validOperation = true;
+        resultDimension = `${firstDim[0]}×${secondDim[1]}`;
     }
     
     let matrixTypeText = "";
