@@ -10,33 +10,36 @@ function processInput() {
     }
     
     let dimensionText = "";
-    let dimensions = matrixSize.trim().split("x");
     let validOperation = false;
     let resultDimension = "";
     
-    if (dimensions.length === 2) {
-        let rows = parseInt(dimensions[0]);
-        let cols = parseInt(dimensions[1]);
-        
-        if (!isNaN(rows) && !isNaN(cols)) {
-            dimensionText = `Dimenzió: ${rows}×${cols}`;
-            
-            // Dimenzióellenőrzés alapműveletekre
-            if (latexInput.includes("*")) {
-                let parts = latexInput.split("*");
-                if (parts.length === 2) {
-                    let firstDim = dimensions;
-                    let secondDim = [cols, Math.floor(Math.random() * 5) + 1]; // Második mátrix oszlopszám randomizálva
-                    
-                    if (firstDim[1] == secondDim[0]) {
-                        validOperation = true;
-                        resultDimension = `${firstDim[0]}×${secondDim[1]}`;
-                    }
-                }
-            }
+    // Dimenziók beolvasása
+    let matrixDimensions = matrixSize.split(",").map(dim => dim.trim());
+    let parsedDimensions = [];
+    
+    for (let dim of matrixDimensions) {
+        let dims = dim.split("x").map(Number);
+        if (dims.length === 2 && !isNaN(dims[0]) && !isNaN(dims[1])) {
+            parsedDimensions.push(dims);
         }
-    } else {
-        dimensionText = "Dimenzió nem meghatározott";
+    }
+    
+    if (parsedDimensions.length < 2) {
+        outputDiv.innerHTML = "<p style='color: red;'>Adj meg legalább két mátrix dimenziót (pl. 3x4, 4x2).</p>";
+        return;
+    }
+    
+    let firstDim = parsedDimensions[0]; // A mátrix dimenziója
+    let secondDim = parsedDimensions[1]; // B mátrix dimenziója
+    
+    dimensionText = `A: ${firstDim[0]}×${firstDim[1]}, B: ${secondDim[0]}×${secondDim[1]}`;
+    
+    // Ellenőrizzük, hogy a művelet helyes-e (mátrix szorzás)
+    if (latexInput.includes("*")) {
+        if (firstDim[1] === secondDim[0]) {
+            validOperation = true;
+            resultDimension = `${firstDim[0]}×${secondDim[1]}`;
+        }
     }
     
     let matrixTypeText = "";
