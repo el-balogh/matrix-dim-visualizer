@@ -54,11 +54,18 @@ p {
     position: absolute;
     background: black;
     color: white;
-    padding: 5px;
+    padding: 5px 10px;
     border-radius: 5px;
     font-size: 12px;
     white-space: nowrap;
     z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    pointer-events: none;
+}
+
+.tooltip.visible {
+    opacity: 1;
 }
 
 /* Kiemelt szöveg, ha fölé visszük az egeret */
@@ -67,4 +74,5 @@ p {
     cursor: pointer;
     padding: 2px 4px;
     border-radius: 3px;
+    position: relative;
 }

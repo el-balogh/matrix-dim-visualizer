@@ -75,16 +75,17 @@ function processInput() {
     console.log("Eredmény kiírása kész");
     MathJax.typeset();
 
-    // Tooltip hozzáadása
+    // Tooltip működése
     document.querySelectorAll(".highlight").forEach(el => {
-        el.addEventListener("mouseover", function() {
+        el.addEventListener("mouseover", function(event) {
             let tooltip = document.createElement("div");
-            tooltip.className = "tooltip";
+            tooltip.className = "tooltip visible";
             tooltip.innerText = `Dimenzió: ${el.getAttribute("data-dim")}`;
             document.body.appendChild(tooltip);
+            
             let rect = el.getBoundingClientRect();
-            tooltip.style.left = `${rect.left + window.scrollX}px`;
-            tooltip.style.top = `${rect.top + window.scrollY - 30}px`;
+            tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+            tooltip.style.top = `${rect.top + window.scrollY - 35}px`;
         });
         el.addEventListener("mouseout", function() {
             document.querySelectorAll(".tooltip").forEach(t => t.remove());
