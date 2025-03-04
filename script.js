@@ -32,31 +32,15 @@ function processInput() {
     let firstDim = parsedDimensions[0]; // A mátrix dimenziója
     let secondDim = parsedDimensions[1]; // B mátrix dimenziója
     
-    let dimensionText = `${matrices[0]}: ${firstDim[0]}×${firstDim[1]}, ${matrices[1]}: ${secondDim[0]}×${secondDim[1]}`;
-    
     let validOperation = (firstDim[1] === secondDim[0]) || isNaN(firstDim[1]) || isNaN(secondDim[0]);
     let resultDimension = validOperation ? `${firstDim[0]}×${secondDim[1]}` : "HIBA";
-    
-    let matrixTypeText = "";
-    switch(matrixType) {
-        case "wishart":
-            matrixTypeText = "Wishart-mátrix";
-            break;
-        case "covariance":
-            matrixTypeText = "Kovariancia-mátrix";
-            break;
-        default:
-            matrixTypeText = "Általános mátrix";
-    }
     
     let operationResult = validOperation 
         ? `<p style='color: green;'>A művelet helyes! Eredmény dimenziója: ${resultDimension}</p>`
         : `<p style='color: red;'>Helytelen művelet (dimenzióhiba)!</p>`;
     
     outputDiv.innerHTML = `
-        <p><strong>LaTeX Kifejezés:</strong> <span class='highlight' data-dim="${firstDim[0]}×${firstDim[1]}">${matrices[0]}</span> * <span class='highlight' data-dim="${secondDim[0]}×${secondDim[1]}">${matrices[1]}</span></p>
-        <p><strong>Típus:</strong> ${matrixTypeText}</p>
-        <p><strong>${dimensionText}</strong></p>
+        <p><strong>LaTeX Kifejezés:</strong> ${latexInput}</p>
         ${operationResult}
     `;
     
@@ -66,18 +50,50 @@ function processInput() {
     // Mátrix vizualizáció
     visualizationDiv.innerHTML = "";
     function drawMatrix(rows, cols, label, color) {
+        let matrixWrapper = document.createElement("div");
+        matrixWrapper.className = "matrix-wrapper";
+        
         let matrix = document.createElement("div");
         matrix.className = "matrix";
-        matrix.style.width = isNaN(cols) ? `100px` : `${cols * 30}px`;
-        matrix.style.height = isNaN(rows) ? `100px` : `${rows * 30}px`;
-        matrix.style.backgroundColor = color;
-        matrix.innerText = label;
-        visualizationDiv.appendChild(matrix);
+        matrix.style.border = `3px solid ${color}`;
+        
+        for (let i = 0; i < Math.min(rows, 4); i++) {
+            let row = document.createElement("div");
+            row.className = "matrix-row";
+            for (let j = 0; j < Math.min(cols, 4); j++) {
+                let cell = document.createElement("div");
+                cell.className = "matrix-cell";
+                cell.innerText = `a${i+1},${j+1}`;
+                row.appendChild(cell);
+            }
+            if (cols > 4) {
+                let dots = document.createElement("div");
+                dots.className = "matrix-cell dots";
+                dots.innerText = "...";
+                row.appendChild(dots);
+            }
+            matrix.appendChild(row);
+        }
+        if (rows > 4) {
+            let dotsRow = document.createElement("div");
+            dotsRow.className = "matrix-row";
+            dotsRow.innerHTML = `<div class='matrix-cell dots'>...</div>`;
+            matrix.appendChild(dotsRow);
+        }
+        
+        let labelDiv = document.createElement("div");
+        labelDiv.className = "matrix-label";
+        labelDiv.innerText = label;
+        
+        matrixWrapper.appendChild(labelDiv);
+        matrixWrapper.appendChild(matrix);
+        visualizationDiv.appendChild(matrixWrapper);
     }
 
     drawMatrix(firstDim[0], firstDim[1], matrices[0], "lightblue");
     drawMatrix(secondDim[0], secondDim[1], matrices[1], "lightgreen");
     if (validOperation && resultDimension !== "HIBA") {
-        drawMatrix(resultDimension.split("×")[0], resultDimension.split("×")[1], "Eredmény", "orange");
+        let resultDim = resultDimension.split("×");
+        drawMatrix(resultDim[0], resultDim[1], "Eredmény", "orange");
     }
 }
